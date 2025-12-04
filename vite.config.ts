@@ -22,7 +22,7 @@ export default defineConfig({
         short_name: "miFIN Lead",
         description: "miFIN Qualtech Lead Management System with offline support",
         theme_color: "#2f4cdd",
-        background_color: "#ffffff",
+        background_color: "#2f4cdd",
         display: "standalone",
         scope: "/mifinLead/",
         start_url: "/mifinLead/worklist",
@@ -33,25 +33,13 @@ export default defineConfig({
             src: "/android-chrome-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: "/android-chrome-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable"
+            purpose: "any maskable"
           },
           {
             src: "/android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: "/android-chrome-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable"
+            purpose: "any maskable"
           }
         ],
         shortcuts: [

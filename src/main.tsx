@@ -41,12 +41,29 @@ if ('serviceWorker' in navigator) {
     },
     onOfflineReady() {
       console.log('✅ App ready to work offline');
+      console.log('✅ PWA can now be used without internet connection');
       // Optional: Show a toast notification
       const event = new CustomEvent('app-offline-ready');
       window.dispatchEvent(event);
     },
     onRegistered(registration) {
-      console.log('✅ Service Worker registered');
+      console.log('✅ Service Worker registered successfully');
+      console.log('📦 Service Worker Scope:', registration?.scope);
+      
+      // Log cache status
+      if ('caches' in window) {
+        caches.keys().then(cacheNames => {
+          console.log('📦 Available caches:', cacheNames);
+          cacheNames.forEach(cacheName => {
+            caches.open(cacheName).then(cache => {
+              cache.keys().then(requests => {
+                console.log(`📦 Cache "${cacheName}": ${requests.length} items`);
+              });
+            });
+          });
+        });
+      }
+      
       // Check for updates every hour
       if (registration) {
         setInterval(() => {
@@ -58,6 +75,15 @@ if ('serviceWorker' in navigator) {
       console.error('❌ Service Worker registration failed:', error);
     },
     immediate: true,
+  });
+  
+  // Check if service worker is controlling the page
+  navigator.serviceWorker.ready.then(registration => {
+    console.log('✅ Service Worker ready and active');
+    console.log('🔧 Controlling?', !!navigator.serviceWorker.controller);
+    if (!navigator.serviceWorker.controller) {
+      console.warn('⚠️ Service Worker not controlling this page yet. Refresh may be needed.');
+    }
   });
 }
 
@@ -74,8 +100,24 @@ if ('serviceWorker' in navigator) {
   }
 };
 
+// Hide splash screen helper
+const hideSplashScreen = () => {
+  const splash = document.getElementById('splash-screen');
+  if (splash) {
+    splash.style.opacity = '0';
+    setTimeout(() => {
+      splash.style.display = 'none';
+    }, 300);
+  }
+};
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <Providers>
     <App />
   </Providers>
 );
+
+// Hide splash screen after React is rendered
+setTimeout(() => {
+  hideSplashScreen();
+}, 100);
