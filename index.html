@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- Viewport for responsive design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- PWA Primary Color -->
+    <meta name="theme-color" content="#2f4cdd" />
+    <meta name="msapplication-TileColor" content="#2f4cdd" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <!-- iOS PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="miFIN Lead" />
+    
+    <!-- Android PWA meta tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="miFIN Lead" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- SEO & Social Meta Tags -->
+    <title>miFIN Qualtech Lead Management</title>
+    <meta name="description" content="miFIN Qualtech Lead Management System with offline support for managing leads, contacts, and work lists" />
+    <meta property="og:title" content="miFIN Qualtech Lead Management" />
+    <meta property="og:description" content="miFIN Qualtech Lead Management System with offline support" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="miFIN Qualtech Lead Management" />
+    <meta name="twitter:description" content="miFIN Qualtech Lead Management System with offline support" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      const windowLocation = window.location;
+      // reassign the path name of base URL
+      if (windowLocation.pathname === "/") {
+        windowLocation.assign("/mifinLead/worklist");
+      } 
+      // else if (windowLocation.pathname === "/mifinLead") {
+      //   windowLocation.assign("/mifinLead/worklist");
+      // }
+
+      // Throw error if base URL has not the module prefix
+      if (
+        windowLocation.pathname !== "/mifinLead" &&
+        !windowLocation.pathname.toString().startsWith("/mifinLead/")
+      ) {
+        console.error("The URL must have a basename: /mifinLead");
+      }
+    </script>
+  </body>
+</html>

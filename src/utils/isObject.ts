@@ -1,0 +1,7 @@
+const isObject = (objValue: any) => {
+  return (
+    objValue && typeof objValue === "object" && objValue.constructor === Object
+  );
+};
+
+export default isObject

@@ -1,0 +1,44 @@
+/* Apply default font and font-size to all table cells */
+.ant-table-cell {
+  font-family: "Poppins" !important;
+  /* color: #1A202C; */
+}
+
+/* Apply font size of 10px for tables with up to 10 columns */
+/* Note: -n+10 selects the first 10 child elements */
+
+/* .worklistTable .ant-table-wrapper .ant-table-thead >tr>th{
+font-size: 12px;
+} */
+.worklistTable .ant-table {
+  font-size: 12px;
+  color: #4A5568;
+  font-weight: 600;
+}
+.worklistTable .ant-table-thead > tr > th {
+  color: #1A202C !important;
+}
+
+/* Highlight offline rows with a light orange/yellow background */
+.worklistTable .ant-table-tbody > tr.offline-row {
+  background-color: #FFF3E0 !important;
+}
+
+.worklistTable .ant-table-tbody > tr.offline-row:hover > td {
+  background-color: #FFE0B2 !important;
+}
+
+.worklistTable .ant-table-tbody > tr.offline-row > td {
+  background-color: #FFF3E0 !important;
+  border-bottom: 1px solid #FFB74D;
+}
+
+/* Ensure selected offline rows also maintain the background color */
+.worklistTable .ant-table-tbody > tr.offline-row.ant-table-row-selected > td {
+  background-color: #FFE0B2 !important;
+}
+
+/* Add a left border indicator for offline rows */
+.worklistTable .ant-table-tbody > tr.offline-row > td:first-child {
+  border-left: 4px solid #FF9800 !important;
+}
