@@ -4,6 +4,9 @@
 /node_modules
 /dist
 /dev-dist
+node_modules
+dist
+dev-dist
 /.pnp
 .pnp.*
 .yarn/*
