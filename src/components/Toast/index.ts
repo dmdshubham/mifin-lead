@@ -20,6 +20,20 @@ const toastFail = (message: string) => {
   });
 };
 
+const toastFailOfflineAware = (message: string) => {
+  // Only show error toast if we're online
+  // When offline, API errors are expected and shouldn't be shown
+  if (navigator.onLine) {
+    toast.error(message, {
+      id: message,
+      style: {
+        border: "1px solid red",
+        padding: "12px",
+      },
+    });
+  }
+};
+
 const toastInfo = (message: string) => {
   toast(message, {
     id: message,
@@ -52,4 +66,4 @@ const toastPromise = (
   );
 };
 
-export { Toaster, toastFail, toastInfo, toastPromise, toastSuccess };
+export { Toaster, toastFail, toastFailOfflineAware, toastInfo, toastPromise, toastSuccess };

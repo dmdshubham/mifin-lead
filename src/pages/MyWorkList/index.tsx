@@ -15,6 +15,7 @@ import { OfflineWorklistWrapper } from "./OfflineWorklistWrapper";
 import { OnlineStatusIndicator } from "@mifin/components/OnlineStatusIndicator";
 import { saveWorklist, getPendingActionsAsWorklistEntries, getWorklist } from "@mifin/utils/indexedDB";
 import { useOffline } from "@mifin/hooks/OfflineContext";
+import { prefetchWorklistLeadDetails } from "@mifin/utils/prefetchLeadDetails";
 
 const GET_LEAD_DETAILS_BODY = {
   ...MASTER_PAYLOAD,
@@ -66,6 +67,8 @@ const MyWorkList: FC = () => {
   const mastersData: any = useAppSelector(state => state.leadDetails.data);
   const { isOnline, pendingSyncCount } = useOffline();
   const worklistData: any = useAppSelector(state => state.getLeadDetails.data);
+  const lastPrefetchedWorklistRef = useRef<string>('');
+  const prefetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const allocateOption = mastersData?.allocateToList?.map(
     (el: IReallocationPopoverProps) => {
@@ -126,11 +129,45 @@ const MyWorkList: FC = () => {
         saveWorklist(apiData).catch(err => {
           console.error('Error caching worklist:', err);
         });
+
+        // Create a unique key for this worklist to avoid duplicate pre-fetches
+        const worklistKey = apiData
+          .map((item: any) => item.leadId || item.caseId || item.caseCode)
+          .filter(Boolean)
+          .sort()
+          .join(',');
+
+        // Only pre-fetch if this is a different worklist or if we haven't prefetched yet
+        if (worklistKey !== lastPrefetchedWorklistRef.current) {
+          // Clear any pending timeout
+          if (prefetchTimeoutRef.current) {
+            clearTimeout(prefetchTimeoutRef.current);
+          }
+
+          // Debounce pre-fetch by 1 second to avoid multiple calls on rapid updates
+          prefetchTimeoutRef.current = setTimeout(() => {
+            lastPrefetchedWorklistRef.current = worklistKey;
+            
+            // Pre-fetch lead details (contact, customer, product) for all worklist items
+            // This runs in the background to cache data for offline access
+            // Only fetches missing or stale data
+            prefetchWorklistLeadDetails(apiData).catch(err => {
+              console.error('Error pre-fetching lead details:', err);
+            });
+          }, 1000);
+        }
       }
     } else {
       // When offline, load from IndexedDB cache
       loadCachedWorklist();
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (prefetchTimeoutRef.current) {
+        clearTimeout(prefetchTimeoutRef.current);
+      }
+    };
   }, [isOnline, worklistData]);
 
   // Fetch fresh data when coming back online

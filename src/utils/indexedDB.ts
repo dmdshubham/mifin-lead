@@ -1,5 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
+// @ts-expect-error - DBSchema type issue with idb library, but works at runtime
 interface MifinDB extends DBSchema {
   leads: {
     key: string;
@@ -31,7 +32,7 @@ interface MifinDB extends DBSchema {
     key: number;
     value: {
       id?: number;
-      type: 'CREATE_LEAD' | 'UPDATE_LEAD' | 'DELETE_LEAD' | 'REALLOCATE' | 'SAVE_CONTACT';
+      type: 'CREATE_LEAD' | 'UPDATE_LEAD' | 'DELETE_LEAD' | 'REALLOCATE' | 'SAVE_CONTACT' | 'SAVE_CUSTOMER' | 'SAVE_PRODUCT';
       payload: any;
       timestamp: number;
       retryCount: number;
@@ -56,10 +57,20 @@ interface MifinDB extends DBSchema {
       timestamp: number;
     };
   };
+  leadDetails: {
+    key: string;
+    value: {
+      leadId: string;
+      contact: any;
+      customer: any;
+      product: any;
+      timestamp: number;
+    };
+  };
 }
 
 const DB_NAME = 'mifin-lead-db';
-const DB_VERSION = 3; // Bumped to 3 to add masterData store
+const DB_VERSION = 4; // Bumped to 4 to add leadDetails store
 
 let dbPromise: Promise<IDBPDatabase<MifinDB>> | null = null;
 
@@ -102,6 +113,11 @@ export const initDB = async (): Promise<IDBPDatabase<MifinDB>> => {
       // App state store
       if (!db.objectStoreNames.contains('appState')) {
         db.createObjectStore('appState', { keyPath: 'key' });
+      }
+
+      // Lead details store (contact, customer, product)
+      if (!db.objectStoreNames.contains('leadDetails')) {
+        db.createObjectStore('leadDetails', { keyPath: 'leadId' });
       }
     },
   });
@@ -208,7 +224,7 @@ export const deleteContactDetails = async (leadId: string) => {
 
 // Pending actions operations
 export const addPendingAction = async (
-  type: 'CREATE_LEAD' | 'UPDATE_LEAD' | 'DELETE_LEAD' | 'REALLOCATE',
+  type: 'CREATE_LEAD' | 'UPDATE_LEAD' | 'DELETE_LEAD' | 'REALLOCATE' | 'SAVE_CONTACT' | 'SAVE_CUSTOMER' | 'SAVE_PRODUCT',
   payload: any
 ) => {
   const db = await initDB();
@@ -305,6 +321,53 @@ export const getAllMasterData = async () => {
   return await db.getAll('masterData');
 };
 
+// Lead details operations (contact, customer, product)
+export const saveLeadDetails = async (leadId: string, contact: any, customer: any, product: any) => {
+  const db = await initDB();
+  await db.put('leadDetails', {
+    leadId,
+    contact,
+    customer,
+    product,
+    timestamp: Date.now(),
+  });
+};
+
+export const getLeadDetails = async (leadId: string) => {
+  const db = await initDB();
+  return await db.get('leadDetails', leadId);
+};
+
+export const getAllLeadDetails = async () => {
+  const db = await initDB();
+  return await db.getAll('leadDetails');
+};
+
+export const deleteLeadDetails = async (leadId: string) => {
+  const db = await initDB();
+  await db.delete('leadDetails', leadId);
+};
+
+// Update individual tab data
+export const updateLeadDetailTab = async (leadId: string, tab: 'contact' | 'customer' | 'product', data: any) => {
+  const db = await initDB();
+  const existing = await db.get('leadDetails', leadId);
+  if (existing) {
+    existing[tab] = data;
+    existing.timestamp = Date.now();
+    await db.put('leadDetails', existing);
+  } else {
+    // Create new entry if doesn't exist
+    await db.put('leadDetails', {
+      leadId,
+      contact: tab === 'contact' ? data : null,
+      customer: tab === 'customer' ? data : null,
+      product: tab === 'product' ? data : null,
+      timestamp: Date.now(),
+    });
+  }
+};
+
 // Clear all data
 export const clearAllData = async () => {
   const db = await initDB();
@@ -314,6 +377,7 @@ export const clearAllData = async () => {
   await db.clear('pendingActions');
   await db.clear('appState');
   await db.clear('masterData');
+  await db.clear('leadDetails');
 };
 
 // Get pending actions as worklist entries

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { api, MifinResponse } from "./service-api";
-import { toastFail } from "@mifin/components/Toast";
+import { toastFail, toastFailOfflineAware } from "@mifin/components/Toast";
 import { MifinHttpClient } from "./service-axios";
 
 const showCustomerData = "get-showCustomer";
@@ -16,7 +16,7 @@ const useCustomerDetail = (info: any) => {
     cacheTime: 0,
     onError: error => {
       console.error(error);
-      toastFail("something wrong");
+      toastFailOfflineAware("something wrong");
     },
   });
 };
@@ -40,7 +40,7 @@ const useGetCustomerDetailMutation = () => {
     },
     onError: err => {
       console.error(err);
-      toastFail("something went wrong");
+      toastFailOfflineAware("something went wrong");
     },
   });
 };

@@ -77,6 +77,12 @@ export const syncPendingActions = async (): Promise<SyncResult> => {
             case 'SAVE_CONTACT':
               syncSuccess = await syncSaveContact(action.payload);
               break;
+            case 'SAVE_CUSTOMER':
+              syncSuccess = await syncSaveCustomer(action.payload);
+              break;
+            case 'SAVE_PRODUCT':
+              syncSuccess = await syncSaveProduct(action.payload);
+              break;
             default:
               console.warn(`Unknown action type: ${action.type}`);
               syncError = `Unknown action type: ${action.type}`;
@@ -204,6 +210,42 @@ const syncSaveContact = async (payload: any): Promise<boolean> => {
     return false;
   } catch (error) {
     console.error('Error syncing contact action:', error);
+    return false;
+  }
+};
+
+const syncSaveCustomer = async (payload: any): Promise<boolean> => {
+  try {
+    const { MifinHttpClient } = await import('@mifin/service/service-axios');
+    const { api } = await import('@mifin/service/service-api');
+    
+    const response = await MifinHttpClient.post(api.customerRecord, payload);
+    
+    if (response.data && response.status === 200) {
+      console.log('Customer action synced successfully');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error syncing customer action:', error);
+    return false;
+  }
+};
+
+const syncSaveProduct = async (payload: any): Promise<boolean> => {
+  try {
+    const { MifinHttpClient } = await import('@mifin/service/service-axios');
+    const { api } = await import('@mifin/service/service-api');
+    
+    const response = await MifinHttpClient.post(api.saveProduct, payload);
+    
+    if (response.data && response.status === 200) {
+      console.log('Product action synced successfully');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error syncing product action:', error);
     return false;
   }
 };

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { api, MifinResponse } from "./service-api";
-import { toastFail } from "@mifin/components/Toast";
+import { toastFail, toastFailOfflineAware } from "@mifin/components/Toast";
 import { MifinHttpClient } from "./service-axios";
 
 const ContactDetailKey = "get-contactDetail";
@@ -17,7 +17,7 @@ const useContactDetail = (info: any) => {
   return useQuery(api.contactDetail, getContactDetail(info), {
     onError: error => {
       console.error(error);
-      toastFail("Something went wrong");
+      toastFailOfflineAware("Something went wrong");
       throw new Error(`An Error occured ${error}`);
     },
   });
@@ -32,7 +32,7 @@ const useGetContactDetailMutation = (info: any) => {
     },
     enabled: !!info,
     onError: () => {
-      toastFail("Something went wrong");
+      toastFailOfflineAware("Something went wrong");
     },
   });
 };

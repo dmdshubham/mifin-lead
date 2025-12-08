@@ -8,6 +8,8 @@ import {
   useSaveCustomerRecord,
   useCustomerDetail,
 } from "@mifin/service/mifin-customerDetails";
+import { useOfflineCustomerDetail } from "@mifin/hooks/useOfflineCustomerDetail";
+import { useOfflineSaveCustomer } from "@mifin/hooks/useOfflineSaveCustomer";
 import { useApiStore } from "@mifin/store/apiStore";
 import CustomerAddress from "@mifin/components/Address/CustomerAddress";
 import { formatdate } from "@mifin/utils/format-date";
@@ -31,8 +33,8 @@ const Index = () => {
   const customerInfo = useAppSelector(state => state.getLeadId);
   const dispatch = useAppDispatch();
   const [developerType, setDeveloperType] = useState();
-  const { mutateAsync: saveActionRecord, isLoading: isCustomerSave } =
-    useSaveCustomerRecord();
+  const { mutateAsync: saveActionRecord, isLoading: isCustomerSave, isOnline: isSaveOnline } =
+    useOfflineSaveCustomer();
   const [allAddress, setAllAddress] = useState();
   const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
@@ -91,7 +93,8 @@ const Index = () => {
     data: CustomerDetail,
     refetch,
     isLoading: isCustomerLoading,
-  } = useCustomerDetail({
+    isOnline: isCustomerDataOnline,
+  } = useOfflineCustomerDetail({
     // deviceDetail: userDetails.deviceDetail,
     // userDetail: userDetails.userDetail,
     ...MASTER_PAYLOAD,

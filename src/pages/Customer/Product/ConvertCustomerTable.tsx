@@ -14,6 +14,8 @@ import {
   useProductDetails,
   useConvertToCustomer,
 } from "@mifin/service/mifin-productDetails";
+import { useOfflineProductDetail } from "@mifin/hooks/useOfflineProductDetail";
+import { useOfflineSaveProduct } from "@mifin/hooks/useOfflineSaveProduct";
 import { useNavigate } from "react-router-dom";
 import { useApiStore } from "@mifin/store/apiStore";
 import { toastFail, toastSuccess } from "@mifin/components/Toast";
@@ -83,7 +85,8 @@ const ConvertCustomerTable: FC<IndexProps> = ({ setCurrentIndex }) => {
     data: ProductDetail,
     refetch,
     isLoading,
-  } = useProductDetails({
+    isOnline: isProductDataOnline,
+  } = useOfflineProductDetail({
     // deviceDetail: userDetails.deviceDetail,
     // userDetail: userDetails.userDetail,
     ...MASTER_PAYLOAD,
@@ -93,8 +96,8 @@ const ConvertCustomerTable: FC<IndexProps> = ({ setCurrentIndex }) => {
       },
     },
   });
-  const { mutateAsync: SaveProductData, isLoading: isProductSave } =
-    useSaveProductRecord();
+  const { mutateAsync: SaveProductData, isLoading: isProductSave, isOnline: isSaveOnline } =
+    useOfflineSaveProduct();
   const { mutate, isLoading: isConvertLoading } = useConvertToCustomer();
   useEffect(() => {
     if (localStorage.getItem("leadSearch") === "true") {

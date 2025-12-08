@@ -1,14 +1,14 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useOffline } from './OfflineContext';
-import { getLeadDetails, updateLeadDetailTab, saveContactDetails, getContactDetails } from '@mifin/utils/indexedDB';
-import { useContactDetail as useOnlineContactDetail } from '@mifin/service/service-contactDetail';
+import { getLeadDetails, updateLeadDetailTab } from '@mifin/utils/indexedDB';
+import { useCustomerDetail } from '@mifin/service/mifin-customerDetails';
 
-export const useOfflineContactDetail = (requestBody: any) => {
+export const useOfflineCustomerDetail = (requestBody: any) => {
   const { isOnline } = useOffline();
   const leadId = requestBody?.requestData?.leadDetail?.caseId;
   
   // Use the online hook
-  const onlineQuery = useOnlineContactDetail(requestBody);
+  const onlineQuery = useCustomerDetail(requestBody);
   
   // Offline state
   const [offlineData, setOfflineData] = useState<any>(null);
@@ -18,13 +18,8 @@ export const useOfflineContactDetail = (requestBody: any) => {
   // Save to cache when online data is fetched
   useEffect(() => {
     if (isOnline && onlineQuery.data && leadId) {
-      // Save to new leadDetails store
-      updateLeadDetailTab(leadId, 'contact', onlineQuery.data).catch(err => {
-        console.error('Error caching contact details:', err);
-      });
-      // Also save to old contactDetails store for backward compatibility
-      saveContactDetails(leadId, onlineQuery.data).catch(err => {
-        console.error('Error caching contact details (legacy):', err);
+      updateLeadDetailTab(leadId, 'customer', onlineQuery.data).catch(err => {
+        console.error('Error caching customer details:', err);
       });
     }
   }, [isOnline, onlineQuery.data, leadId]);
@@ -37,34 +32,24 @@ export const useOfflineContactDetail = (requestBody: any) => {
     setIsLoadingOffline(true);
     
     try {
-      // Try new store first
       const cached = await getLeadDetails(leadId);
-      if (cached && cached.contact) {
-        console.log(`Loaded contact details for ${leadId} from cache`);
-        setOfflineData(cached.contact);
-        setIsLoadingOffline(false);
-        return;
-      }
-      
-      // Fallback to old store
-      const legacyCached = await getContactDetails(leadId);
-      if (legacyCached) {
-        console.log(`Loaded contact details for ${leadId} from legacy cache`);
-        setOfflineData(legacyCached.data);
+      if (cached && cached.customer) {
+        console.log(`Loaded customer details for ${leadId} from cache`);
+        setOfflineData(cached.customer);
       } else {
-        console.log(`No cached contact details for ${leadId}`);
+        console.log(`No cached customer details for ${leadId}`);
         setOfflineData(null);
       }
     } catch (err) {
-      console.error('Error loading cached contact details:', err);
+      console.error('Error loading cached customer details:', err);
       setOfflineData(null);
     } finally {
       setIsLoadingOffline(false);
     }
   }, [leadId]);
 
-  // Load from cache when offline - use useLayoutEffect for immediate execution
-  useLayoutEffect(() => {
+  // Load from cache when offline
+  useEffect(() => {
     if (!isOnline && leadId) {
       // Reset flag when leadId or online status changes
       if (hasLoadedRef.current) {

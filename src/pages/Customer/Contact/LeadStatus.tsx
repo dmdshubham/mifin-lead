@@ -6,9 +6,8 @@ import {
   Heading,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useAppSelector, useAppDispatch } from "@mifin/redux/hooks";
+import { useAppSelector } from "@mifin/redux/hooks";
 import { FC, useEffect, useRef, useState } from "react";
-import { getDependentMaster } from "@mifin/redux/service/getDependentMaster/api";
 import EscalatePopover from "@mifin/pages/Customer/Modal/EscalatePopover";
 import CoAllocatePopover from "@mifin/pages/Customer/Modal/CoAllocatePopover";
 import ReferPopover from "@mifin/pages/Customer/Modal/ReferPopover";
@@ -18,7 +17,6 @@ import DateRange from "@mifin/components/Date";
 import { Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ILeadStatusProps } from "@mifin/Interface/Customer";
-import { MASTER_PAYLOAD } from "@mifin/ConstantData/apiPayload";
 import LeadGrid from "@mifin/components/LeadGrid";
 import TimeKeeper from "react-timekeeper";
 
@@ -26,12 +24,7 @@ const LeadStatus: FC<ILeadStatusProps> = props => {
   const { defaultValues, control, watch, isConvertedToCustomer } = props;
   const mastersData: any = useAppSelector(state => state.leadDetails.data);
   const allMastersData = mastersData?.Masters;
-  const followupAction: any = useAppSelector(
-    state => state.getDependentMaster.data
-  );
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const nextAction = watch("action");
   const ref = useRef<HTMLDivElement | null>(null);
   const [inputType, setInputType] = useState("text");
   const [openTimePicker, setOpenTimePicker] = useState(false);
@@ -144,7 +137,7 @@ const LeadStatus: FC<ILeadStatusProps> = props => {
     }
   );
 
-  const followUpAction = followupAction?.followUpAction?.map(
+  const followUpAction = allMastersData?.followUpAction?.map(
     (el: ILeadStatusProps) => {
       return {
         label: el?.value,
@@ -152,26 +145,6 @@ const LeadStatus: FC<ILeadStatusProps> = props => {
       };
     }
   );
-
-  const DEPENDENT_MASTERS = {
-    ...MASTER_PAYLOAD,
-    requestData: {
-      idColumnName: "NEXTACTION_ID",
-      valueColumnName: "NEXTACTION_NAME",
-      dependentTableName: "QM_CASE_NEXT_ACTION",
-      crossTableName: "QM_CASE_NEXT_ACTION",
-      crossTableDependentId: "NEXTACTION_ID",
-      crossTableMasterId: "ACTION_ID",
-      masterValue: defaultValues?.action?.value,
-    },
-  };
-
-  useEffect(() => {
-    const getWorkListLeadDetails = () => {
-      dispatch(getDependentMaster(DEPENDENT_MASTERS));
-    };
-    getWorkListLeadDetails();
-  }, [nextAction]);
 
   return (
     <Box mx={1}>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { api, MifinResponse } from "./service-api";
-import { toastFail, toastSuccess } from "@mifin/components/Toast";
+import { toastFail, toastFailOfflineAware, toastSuccess } from "@mifin/components/Toast";
 import { MifinHttpClient } from "./service-axios";
 
 const getShowBulk = (body: any) => async () => {
@@ -14,7 +14,7 @@ const useProductDetails = (info: any) => {
     cacheTime: 0,
     onError: error => {
       console.error(error);
-      toastFail("something wrong");
+      toastFailOfflineAware("something wrong");
     },
   });
 };
