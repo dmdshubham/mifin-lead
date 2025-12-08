@@ -31,6 +31,7 @@ const ExpireLoggedInSession: FC = () => {
     hostName === "localhost" || hostName === "127.0.0.1" || hostName === "";
 
   useEffect(() => {
+    // eslint-disable-next-line no-constant-condition
     if (isLocalHost) {
       sessionStorage.setItem(
         "jwt",
