@@ -61,9 +61,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,eot}"],
-        globIgnores: ["**/pincode.json"],
+        globIgnores: ["**/pincode.json", "pincode.json"],
         navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/api/, /\.(?:png|jpg|jpeg|svg|gif|webp)$/],
+        navigateFallbackDenylist: [/^\/api/, /\.(?:png|jpg|jpeg|svg|gif|webp)$/, /pincode\.json$/],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,

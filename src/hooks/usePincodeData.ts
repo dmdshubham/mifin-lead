@@ -32,8 +32,12 @@ export const usePincodeData = () => {
         const isLoaded = await pincodeDB.isDataLoaded();
         
         if (!isLoaded) {
-          // Load the pincode data only once
-          const pincodeData = await import('@mifin/ConstantData/pincode.json');
+          // Fetch the pincode data from public folder
+          const response = await fetch('/pincode.json');
+          if (!response.ok) {
+            throw new Error('Failed to fetch pincode data');
+          }
+          const pincodeData = await response.json();
           await pincodeDB.loadPincodeData(pincodeData);
         }
         
