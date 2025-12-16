@@ -1,5 +1,5 @@
 import { Box, FormControl, FormLabel, Heading } from "@chakra-ui/react";
-import { useEffect, ChangeEvent, FC, useRef } from "react";
+import { useEffect, ChangeEvent, FC, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@mifin/redux/hooks";
 import { getCitiesByState } from "@mifin/redux/service/getCitiesByState/api";
 import { getPincodeByCity } from "@mifin/redux/service/getPinCodeByCity/api";
@@ -14,6 +14,7 @@ import LeadDetailCustomerDetailGrid from "@mifin/components/LeadDetailCustomerDe
 import SelectComponent from "@mifin/components/SelectComponent";
 import { useFormContext } from "react-hook-form";
 import TextInput from "@mifin/components/Input";
+import { usePincodeData } from "@mifin/hooks/usePincodeData";
 
 const PropertyDetail: FC<IPropertyDetailProps> = props => {
   const {
@@ -40,15 +41,52 @@ const PropertyDetail: FC<IPropertyDetailProps> = props => {
     prevDefaultValuesForCity.current = "";
     prevDefaultValuesForProjectName.current = "";
   }, [saveCount]);
-  const allCities: any = useAppSelector(
-    (state: any) => state.getCitiesByState?.data?.city
-  );
-
-  const allPincode: any = useAppSelector(
-    (city: any) => city.getPincodeByCity?.data?.pincode
-  );
 
   const particularState = watchAddress("state");
+  const particularCity = watchAddress("city");
+
+  // Use the pincode database hook
+  const { 
+    isLoading: isPincodeLoading, 
+    isInitialized: isPincodeInitialized,
+    getCitiesByState: fetchCitiesByState,
+    getPincodesByCity: fetchPincodesByCity 
+  } = usePincodeData();
+
+  // State to store cities and pincodes
+  const [allCities, setAllCities] = useState<any[]>([]);
+  const [allPincode, setAllPincode] = useState<any[]>([]);
+
+  // Fetch cities when state changes
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (particularState?.value && isPincodeInitialized) {
+        const cities = await fetchCitiesByState(particularState.value);
+        setAllCities(cities);
+      } else {
+        setAllCities([]);
+      }
+    };
+
+    fetchCities();
+  }, [particularState?.value, isPincodeInitialized, fetchCitiesByState]);
+
+  // Fetch pincodes when city changes
+  useEffect(() => {
+    const fetchPincodes = async () => {
+      if (particularCity?.value && isPincodeInitialized) {
+        const pincodes = await fetchPincodesByCity(particularCity.value);
+        setAllPincode(pincodes);
+      } else {
+        setAllPincode([]);
+      }
+    };
+
+    fetchPincodes();
+  }, [particularCity?.value, isPincodeInitialized, fetchPincodesByCity]);
+
+  console.log("allCities", allCities);
+  console.log("allPincode", allPincode);
 
   useEffect(() => {
     if (defaultValues?.listProperty?.length === 0) {
@@ -123,8 +161,11 @@ const PropertyDetail: FC<IPropertyDetailProps> = props => {
 
   const handleState = (selectedState: any) => {
     if (selectedState) {
-      const stateId = selectedState?.e?.value;
-      dispatch(getCitiesByState(GET_CITIES_BY_STATE(stateId)));
+      // No need to dispatch API call - using local JSON data
+      // const stateId = selectedState?.e?.value;
+      // dispatch(getCitiesByState(GET_CITIES_BY_STATE(stateId)));
+      
+      // Clear city and zipcode when state changes
       setValue("city", null);
       setValue("zipcode", null);
     }
@@ -132,8 +173,12 @@ const PropertyDetail: FC<IPropertyDetailProps> = props => {
 
   const handleCity = (selectedCity: any) => {
     if (selectedCity) {
-      const cityId = selectedCity?.e?.value;
-      dispatch(getPincodeByCity(GET_PINCODE_BY_CITY(cityId)));
+      // No need to dispatch API call - using local JSON data
+      // const cityId = selectedCity?.e?.value;
+      // dispatch(getPincodeByCity(GET_PINCODE_BY_CITY(cityId)));
+      
+      // Clear zipcode when city changes
+      setValue("zipcode", null);
     }
   };
 

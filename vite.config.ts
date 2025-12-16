@@ -60,7 +60,8 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2,ttf,eot}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,eot}"],
+        globIgnores: ["**/pincode.json"],
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api/, /\.(?:png|jpg|jpeg|svg|gif|webp)$/],
         cleanupOutdatedCaches: true,

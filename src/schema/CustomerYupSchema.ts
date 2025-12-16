@@ -175,12 +175,12 @@ export const customerSchema = (t: typeof i18next.t, allAddress) => {
           );
           console.log(residenceAddressExists, residenceStateFilled, "val?");
 
-          if (residenceAddressExists && !residenceStateFilled) {
-            return this.createError({
-              message: "Residence Address is mandatory",
-              path: this.path,
-            });
-          }
+          // if (residenceAddressExists && !residenceStateFilled) {
+          //   return this.createError({
+          //     message: "Residence Address is mandatory",
+          //     path: this.path,
+          //   });
+          // }
           return true;
         })
         .test("perma-mandatory", function (value) {
@@ -194,12 +194,12 @@ export const customerSchema = (t: typeof i18next.t, allAddress) => {
             addr =>
               addr?.addressType === "1000000002" && addr?.state?.trim() !== ""
           );
-          if (permaAddressExists && !permaStateFilled) {
-            return this.createError({
-              message: "Permanent Address is mandatory",
-              path: this.path,
-            });
-          }
+          // if (permaAddressExists && !permaStateFilled) {
+          //   return this.createError({
+          //     message: "Permanent Address is mandatory",
+          //     path: this.path,
+          //   });
+          // }
           return true;
         })
         .test("office-mandatory", function (value) {
