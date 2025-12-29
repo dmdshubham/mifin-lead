@@ -13,7 +13,11 @@ import { useAppSelector } from "@mifin/redux/hooks";
 import { getLeadDetails } from "@mifin/redux/service/worklistGetLeadDetails/api";
 import { OfflineWorklistWrapper } from "./OfflineWorklistWrapper";
 import { OnlineStatusIndicator } from "@mifin/components/OnlineStatusIndicator";
-import { saveWorklist, getPendingActionsAsWorklistEntries, getWorklist } from "@mifin/utils/indexedDB";
+import {
+  saveWorklist,
+  getPendingActionsAsWorklistEntries,
+  getWorklist,
+} from "@mifin/utils/indexedDB";
 import { useOffline } from "@mifin/hooks/OfflineContext";
 import { prefetchWorklistLeadDetails } from "@mifin/utils/prefetchLeadDetails";
 
@@ -67,7 +71,7 @@ const MyWorkList: FC = () => {
   const mastersData: any = useAppSelector(state => state.leadDetails.data);
   const { isOnline, pendingSyncCount } = useOffline();
   const worklistData: any = useAppSelector(state => state.getLeadDetails.data);
-  const lastPrefetchedWorklistRef = useRef<string>('');
+  const lastPrefetchedWorklistRef = useRef<string>("");
   const prefetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const allocateOption = mastersData?.allocateToList?.map(
@@ -87,7 +91,7 @@ const MyWorkList: FC = () => {
     const getWorkListLeadDetails = () => {
       // Fetch master data - works both online and offline (with cache)
       dispatch(fetchLeadDetails({ ...MASTER_PAYLOAD })).catch(err => {
-        console.log('Master data fetch issue (may be using cache):', err);
+        console.log("Master data fetch issue (may be using cache):", err);
       });
     };
     getWorkListLeadDetails();
@@ -107,7 +111,7 @@ const MyWorkList: FC = () => {
         setLeadData([]);
       }
     } catch (err) {
-      console.error('Error loading cached worklist:', err);
+      console.error("Error loading cached worklist:", err);
       setLeadData([]);
     }
   };
@@ -124,10 +128,10 @@ const MyWorkList: FC = () => {
       if (worklistData?.leadData?.aaData) {
         const apiData = worklistData.leadData.aaData;
         setLeadData(apiData);
-        
+
         // Cache in IndexedDB for offline access
         saveWorklist(apiData).catch(err => {
-          console.error('Error caching worklist:', err);
+          console.error("Error caching worklist:", err);
         });
 
         // Create a unique key for this worklist to avoid duplicate pre-fetches
@@ -135,7 +139,7 @@ const MyWorkList: FC = () => {
           .map((item: any) => item.leadId || item.caseId || item.caseCode)
           .filter(Boolean)
           .sort()
-          .join(',');
+          .join(",");
 
         // Only pre-fetch if this is a different worklist or if we haven't prefetched yet
         if (worklistKey !== lastPrefetchedWorklistRef.current) {
@@ -147,12 +151,12 @@ const MyWorkList: FC = () => {
           // Debounce pre-fetch by 1 second to avoid multiple calls on rapid updates
           prefetchTimeoutRef.current = setTimeout(() => {
             lastPrefetchedWorklistRef.current = worklistKey;
-            
+
             // Pre-fetch lead details (contact, customer, product) for all worklist items
             // This runs in the background to cache data for offline access
             // Only fetches missing or stale data
             prefetchWorklistLeadDetails(apiData).catch(err => {
-              console.error('Error pre-fetching lead details:', err);
+              console.error("Error pre-fetching lead details:", err);
             });
           }, 1000);
         }
@@ -183,7 +187,7 @@ const MyWorkList: FC = () => {
       const pendingActions = await getPendingActionsAsWorklistEntries();
       setPendingLeads(pendingActions);
     } catch (err) {
-      console.error('Error fetching pending actions:', err);
+      console.error("Error fetching pending actions:", err);
       setPendingLeads([]);
     }
   };
@@ -201,12 +205,12 @@ const MyWorkList: FC = () => {
   const prevSyncCountRef = useRef(pendingSyncCount);
   useEffect(() => {
     fetchPendingLeads();
-    
+
     // If sync count decreased, it means items were synced - refetch main data
     if (prevSyncCountRef.current > pendingSyncCount && isOnline) {
       getAllLeadList();
     }
-    
+
     prevSyncCountRef.current = pendingSyncCount;
   }, [pendingSyncCount, isOnline]);
 

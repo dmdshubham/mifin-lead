@@ -189,12 +189,12 @@ const SearchForm: FC<ISearchFormProps> = props => {
         },
       },
     };
-    
+
     const searchReqData = {
       requestType: searchButton != "" ? searchButton : "myLead",
       ...data,
       caseCode: trimmedCaseCode,
-    }
+    };
     //setSearchData(data);
     setSearchData(searchReqData);
     setAllID([]);
@@ -246,8 +246,8 @@ const SearchForm: FC<ISearchFormProps> = props => {
     <Box my={{ sm: 6, md: 8 }} p={{ sm: 4, md: 6 }} sx={searchFormBoxStyling}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Single Row Layout for Main Search Fields */}
-        <Flex 
-          gap={{ base: 3, md: 4 }} 
+        <Flex
+          gap={{ base: 3, md: 4 }}
           flexWrap={{ base: "wrap", md: "nowrap" }}
           alignItems="flex-end"
         >
@@ -336,7 +336,11 @@ const SearchForm: FC<ISearchFormProps> = props => {
           {showAdvance ? (
             <Box>
               {/* Advanced Search - Row 1 */}
-              <Flex gap={{ base: 3, md: 4 }} flexWrap={{ base: "wrap", md: "nowrap" }} mb={6}>
+              <Flex
+                gap={{ base: 3, md: 4 }}
+                flexWrap={{ base: "wrap", md: "nowrap" }}
+                mb={6}
+              >
                 <FormControl flex={{ base: "1 1 100%", md: "1 1 auto" }}>
                   <FormLabel fontSize={"14px"} mb={1}>
                     {t("worklist.advanceSearch.queue")}
@@ -375,7 +379,11 @@ const SearchForm: FC<ISearchFormProps> = props => {
               </Flex>
 
               {/* Advanced Search - Row 2 */}
-              <Flex gap={{ base: 3, md: 4 }} flexWrap={{ base: "wrap", md: "nowrap" }} mb={6}>
+              <Flex
+                gap={{ base: 3, md: 4 }}
+                flexWrap={{ base: "wrap", md: "nowrap" }}
+                mb={6}
+              >
                 <FormControl flex={{ base: "1 1 100%", md: "1 1 auto" }}>
                   <FormLabel fontSize={"14px"} mb={1}>
                     {t("worklist.advanceSearch.leadStage")}
@@ -414,7 +422,11 @@ const SearchForm: FC<ISearchFormProps> = props => {
               </Flex>
 
               {/* Advanced Search - Row 3 */}
-              <Flex gap={{ base: 3, md: 4 }} flexWrap={{ base: "wrap", md: "nowrap" }} mb={6}>
+              <Flex
+                gap={{ base: 3, md: 4 }}
+                flexWrap={{ base: "wrap", md: "nowrap" }}
+                mb={6}
+              >
                 <FormControl flex={{ base: "1 1 100%", md: "1 1 auto" }}>
                   <FormLabel fontSize={"14px"} mb={1}>
                     {t("worklist.advanceSearch.amountFrom")}
@@ -519,7 +531,6 @@ const SearchForm: FC<ISearchFormProps> = props => {
             </Box>
           ) : null}
         </Box>
-
       </form>
     </Box>
   );
