@@ -17,10 +17,11 @@
     "prestart:stage": "yarn",
     "start:stage": "vite --mode staging",
     "build:stage": "NODE_OPTIONS='--max-old-space-size=8192' vite build --mode staging",
-    "lint": "yarn lint:fix && yarn lint:format",
     "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "cm": "cz",
-    "postinstall": "cd ../.. && npx husky install"
+    "postinstall": "cd ../.. && npx husky install",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "test": "jest"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.11",
