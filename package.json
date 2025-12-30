@@ -20,7 +20,7 @@
     "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "cm": "cz",
     "postinstall": "cd ../.. && npx husky install",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint .",
     "test": "jest"
   },
   "dependencies": {
