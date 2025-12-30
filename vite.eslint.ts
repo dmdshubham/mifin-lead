@@ -43,6 +43,7 @@ export default (
             const text = formatter.format(lintResultList);
 
             if (text && text.trim().length) {
+              console.log(text);
             }
           }
 
